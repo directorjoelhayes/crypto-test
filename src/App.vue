@@ -1,5 +1,54 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
+import { reactive } from 'vue'
+
+import AES from 'crypto-js/aes';
+import { enc } from 'crypto-js';
+
+const message = 'Hello, world!';
+const privateKey = '1234567890';
+
+// Encrypt
+const encrypted = AES.encrypt(message, privateKey).toString();
+
+// Decrypt
+const decrypted = AES.decrypt(encrypted, privateKey).toString(enc.Utf8);
+
+
+const createNode = ({
+  name,
+  to,
+  toSecret, 
+  fromSecret
+} = {}) => {
+
+  const sendMessage = (message) => {
+    const encrypted = AES.encrypt(message, toSecret).toString();
+    return {
+      to,
+      message: encrypted
+    }
+  }
+
+  const receiveMessage = (message) => {
+    const decrypted = AES.decrypt(message, fromSecret).toString(enc.Utf8);
+    return decrypted;
+  }
+
+  return {
+    name,
+    to,
+    toSecret, 
+    fromSecret,
+    sendMessage,
+    receiveMessage
+  }
+}
+
+const step = reactive({
+  encrypted: encrypted,
+  decrypted: decrypted
+})
 </script>
 
 <template>
@@ -12,6 +61,7 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  {{ step }}
 </template>
 
 <style scoped>
